@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { Container, Button, Text, Form, Item, Input, Label } from 'native-base'
+import { connect } from 'react-redux'
+
 import Fire from '../firebase/index'
+import { onLogin } from '../store/actions/index'
 
 class AuthScreen extends Component {
 
@@ -21,8 +24,10 @@ class AuthScreen extends Component {
          let res = await Fire.auth()
             .createUserWithEmailAndPassword(email, password)
 
-         console.log(res.user.email)
-         console.log(res.user.uid)
+         this.props.onLoginUser(
+            res.user.uid,
+            res.user.email
+         )
       }
 
    }
@@ -35,16 +40,16 @@ class AuthScreen extends Component {
       return (
          <Container>
             <Form>
-               <Item floatingLabel>
+               <Item stackedLabel>
                   <Label>Email</Label>
                   <Input onChangeText={(input) => this.setState({ email: input })} />
                </Item>
-               <Item floatingLabel last>
+               <Item stackedLabel last>
                   <Label>Password</Label>
                   <Input secureTextEntry onChangeText={(input) => this.setState({ password: input })} />
                </Item>
             </Form>
-            <Button onPress={this.authRegister}>
+            <Button onPress={this.authRegister} style={styles.button}>
                <Text>Register</Text>
             </Button>
          </Container>
@@ -52,4 +57,24 @@ class AuthScreen extends Component {
    }
 }
 
-export default AuthScreen
+const styles = StyleSheet.create(
+   {
+      button: {
+         width: 100,
+         height: 50,
+         backgroundColor: 'rgb(0, 196, 0)',
+         borderRadius: 25,
+         marginTop: 20
+      }
+   }
+)
+
+const mapDispatchToProps = dispatch => {
+   return {
+      onLoginUser: (uid, email) => {
+         dispatch(onLogin(uid, email))
+      }
+   }
+}
+
+export default connect(null, mapDispatchToProps)(AuthScreen)

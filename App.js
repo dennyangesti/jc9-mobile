@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text } from 'react-native'
+import { Provider } from 'react-redux'
 import { Icon } from 'native-base'
 import {
   createStackNavigator,
@@ -11,6 +11,8 @@ import AuthScreen from './src/auth/AuthScreen'
 import DiaryScreen from './src/app/DiaryScreen'
 import ProfileScreen from './src/app/ProfileScreen'
 import PhoneCall from './src/app/CallScreen'
+
+import STORE from './src/store/reducers/index'
 
 
 
@@ -53,12 +55,14 @@ const RootStack = createStackNavigator(
   }
 )
 
-const AppContainer = createAppContainer(MainTab)
+const AppContainer = createAppContainer(RootStack)
 
 class App extends Component {
   render() {
     return (
-      <AppContainer />
+      <Provider store={STORE}>
+        <AppContainer />
+      </Provider>
     )
   }
 }
