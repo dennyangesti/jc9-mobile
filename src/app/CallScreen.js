@@ -18,7 +18,7 @@ class CallScreen extends Component {
                <Image source={{ uri: 'https://i.ibb.co/9rmNPyy/subur.jpg' }} style={styles.img} />
                <Text style={styles.call}>
                   Phone call from,
-          </Text>
+                </Text>
                <Text style={styles.nama}> Subur</Text>
                <TouchableNativeFeedback>
                   <View style={styles.button}>

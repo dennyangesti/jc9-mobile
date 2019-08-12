@@ -53,7 +53,7 @@ const RootStack = createStackNavigator(
   }
 )
 
-const AppContainer = createAppContainer(RootStack)
+const AppContainer = createAppContainer(MainTab)
 
 class App extends Component {
   render() {
