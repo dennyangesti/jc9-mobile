@@ -35,35 +35,60 @@ class AuthScreen extends Component {
       })
    }
 
-   authRegister = async () => {
+   // Function yang akan dijalankan ketika klik button register
+   authButton = async () => {
       let email = this.state.email
       let password = this.state.password
+      let confirm = this.state.confirm
 
-      //REGISTER
-      if (password.length < 6) {
-         alert('Password harus minimal 6 karakter')
+      if (this.state.login) {
+         // LOGIN
+
+         try {
+            // Login di firebase
+            let user = await Fire.auth().signInWithEmailAndPassword(email, password)
+
+            // Login di app
+            this.props.onLoginUser(
+               user.uid, user.email
+            )
+
+            // Pindah ke halaman utama
+            this.props.navigation.navigate(`Main`)
+         } catch (error) {
+            // Jika terjadi error pada block kode `try`, akan muncul pesan ini   
+            alert(error.message)
+         }
       } else {
-         let res = await Fire.auth()
-            .createUserWithEmailAndPassword(email, password)
+         //REGISTER
+         if (password.length < 6) {
+            alert('Password harus minimal 6 karakter')
+         } else {
+            if (password == confirm) {
+               let res = await Fire.auth()
+                  .createUserWithEmailAndPassword(email, password)
 
-         this.props.onLoginUser(
-            res.user.uid,
-            res.user.email
-         )
+               this.props.onLoginUser(
+                  res.user.uid,
+                  res.user.email
+               )
 
-         this.props.navigation.navigate('MainTab')
+               this.props.navigation.navigate('MainTab')
+            } else {
+               alert(`Password dan confirm harus sama`)
+            }
+         }
       }
-
-   }
-
-   pindahScreen = () => {
-      this.props.navigation.navigate('Main')
    }
 
    render() {
+      let titleTopButton, form
+
       // Render register
       if (!this.state.login) {
-         return (
+         titleTopButton = `Switch to Login`
+         titleBotBottom = `Register`
+         form = (
             <Container style={styles.container}>
                <Text style={styles.title}>Registration Form</Text>
                <Content padder style={{ width: 400 }}>
@@ -80,12 +105,12 @@ class AuthScreen extends Component {
                            </Item>
                            <Item stackedLabel last>
                               <Label>Confirm Password</Label>
-                              <Input secureTextEntry onChangeText={(input) => this.setState({ password: input })} />
+                              <Input secureTextEntry onChangeText={(input) => this.setState({ confirm: input })} />
                            </Item>
                         </Form>
                      </CardItem>
                      <CardItem>
-                        <Button onPress={this.authRegister} style={styles.button}>
+                        <Button onPress={this.authButton} style={styles.button}>
                            <Text style={styles.text}>Register</Text>
                         </Button>
                      </CardItem>
@@ -98,7 +123,9 @@ class AuthScreen extends Component {
          )
       } else {
          // Render Login
-         return (
+         titleTopButton = `Switch to Register`
+         titleBotBottom = `Login`
+         form = (
             <Container style={styles.container}>
                <Text style={styles.title}>Login</Text>
                <Content padder style={{ width: 400 }}>
@@ -116,7 +143,7 @@ class AuthScreen extends Component {
                         </Form>
                      </CardItem>
                      <CardItem>
-                        <Button onPress={this.authRegister} style={styles.button}>
+                        <Button onPress={this.authButton} style={styles.button}>
                            <Text style={styles.text}>Login</Text>
                         </Button>
                      </CardItem>
@@ -128,6 +155,12 @@ class AuthScreen extends Component {
             </Container>
          )
       }
+
+      return (
+         <Container>
+            {form}
+         </Container>
+      )
    }
 }
 
@@ -149,7 +182,7 @@ const styles = StyleSheet.create(
          fontSize: 25,
          fontWeight: 'bold',
          textTransform: 'uppercase',
-         marginTop: 50
+         marginTop: 30
       },
       text: {
          marginLeft: 120
